@@ -15,6 +15,7 @@
     "cheerio": "^1.0.0-rc.12",
     "langchain": "^0.3.27",
     "next": "15.3.3",
+    "playwright": "^1.52.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "ts-node": "^10.9.2"
