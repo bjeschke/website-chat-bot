@@ -45,7 +45,10 @@ export default function ChatInterface() {
 
     return (
         <div className="p-4 max-w-2xl mx-auto bg-gradient-to-br from-blue-50 via-white to-blue-100 shadow-xl rounded-xl">
-            <div className="border rounded-t-lg p-4 bg-blue-400 text-white">{COMPANY_NAME} Chatbot</div>
+            <div className="flex items-center gap-3 align-bottom border rounded-t-lg p-4 bg-blue-400 text-white">
+                <img src="/robot-assistant.png" alt="🤖" className="h-10" />
+                <span className="text-lg font-semibold">{COMPANY_NAME} Chatbot</span>
+            </div>
             <div className="border rounded-b-lg p-4 h-[400px] overflow-y-auto bg-white">
                 {messages.map((msg, i) => (
                     <div key={i} className={`mb-2 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
