@@ -1,7 +1,8 @@
 import {useEffect, useState} from 'react';
+import Spinner from "@/app/components/spinner";
 
 interface Message {
-    role: 'user' | 'assistant';
+    role: 'user' | 'assistant' | 'loading';
     content: string;
 }
 
@@ -20,7 +21,7 @@ export default function ChatInterface() {
         if (!question.trim()) return;
         setLoading(true);
 
-        const updatedMessages: Message[] = [...messages, { role: 'user', content: question }];
+        const updatedMessages: Message[] = [...messages, { role: 'user', content: question }, { role: 'loading', content: '' }];
         setMessages(updatedMessages);
         setQuestion('');
 
@@ -33,7 +34,7 @@ export default function ChatInterface() {
 
             const data = await response.json();
             if (data.answer) {
-                setMessages([...updatedMessages, { role: 'assistant', content: data.answer }]);
+                setMessages([...updatedMessages.filter(m => m.role !== 'loading'), { role: 'assistant', content: data.answer }]);
             }
         } catch (err) {
             console.error('Fehler beim Senden:', err);
@@ -48,9 +49,11 @@ export default function ChatInterface() {
             <div className="border rounded-b-lg p-4 h-[400px] overflow-y-auto bg-white">
                 {messages.map((msg, i) => (
                     <div key={i} className={`mb-2 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
-            <span className={`inline-block px-3 py-2 rounded ${msg.role === 'user' ? 'bg-blue-400' : 'bg-gray-500'}`}>
-              {msg.content}
-            </span>
+                        <span className={`max-w-xs inline-block px-4 py-2 rounded-lg text-sm whitespace-pre-line shadow-md ${
+                            msg.role === 'user' ? 'bg-blue-600 text-white' : msg.role === 'loading' ? 'bg-yellow-100 text-yellow-800 italic' : 'bg-gray-100 text-gray-800'
+                        }`}>
+                            {msg.role === 'loading' ? <Spinner /> : msg.content}
+                        </span>
                     </div>
                 ))}
             </div>
@@ -67,7 +70,7 @@ export default function ChatInterface() {
                     onClick={sendQuestion}
                     disabled={loading}
                 >
-                    Senden
+                    {loading ? '...Antwortet' : 'Senden'}
                 </button>
             </div>
         </div>

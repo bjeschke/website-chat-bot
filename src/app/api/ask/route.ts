@@ -9,7 +9,8 @@ import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 let vectorStore: MemoryVectorStore | null = null;
 const cache = new Map<string, string>();
 
-const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || 'Benjamin Jeschke';
+const COMPANY_NAME = (process.env.NEXT_PUBLIC_COMPANY_NAME || 'Benjamin Jeschke').trim();
+const COMPANY_WEBSITE = process.env.NEXT_PUBLIC_COMPANY_WEBSITE || 'benjaminjeschke.com';
 
 async function loadVectorStore(): Promise<MemoryVectorStore> {
     if (vectorStore) return vectorStore;
@@ -37,7 +38,7 @@ async function isContextFree(question: string): Promise<boolean> {
         model: 'gpt-3.5-turbo'
     });
 
-    const systemPrompt = `Du bist ein Klassifizierer. Beantworte nur mit "ja" oder "nein". Ist die folgende Frage unabhängig vom Kontext über carvolution.ch und kann sie auch ohne zusätzlichen Hintergrund sinnvoll beantwortet werden?`;
+    const systemPrompt = `Du bist ein Klassifizierer Mitarbeiter von ${COMPANY_WEBSITE}. Beantworte nur mit "ja" oder "nein". Ist die folgende Frage unabhängig vom Kontext über ${COMPANY_WEBSITE} und kann sie auch ohne zusätzlichen Hintergrund sinnvoll beantwortet werden?`;
     const input = `${systemPrompt}\n\nFrage: ${question}`;
 
     const result = await model.invoke(input);
