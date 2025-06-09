@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { OpenAI } from '@langchain/openai';
+import { ChatOpenAI } from '@langchain/openai';
 import { OpenAIEmbeddings } from '@langchain/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
@@ -28,17 +28,19 @@ async function loadVectorStore(): Promise<MemoryVectorStore> {
 }
 
 async function isContextFree(question: string): Promise<boolean> {
-    const model = new OpenAI({
+    const model = new ChatOpenAI({
         temperature: 0,
         openAIApiKey: process.env.OPENAI_API_KEY,
-        maxTokens: 50
+        maxTokens: 50,
+        model: 'gpt-3.5-turbo'
     });
 
     const systemPrompt = `Du bist ein Klassifizierer. Beantworte nur mit "ja" oder "nein". Ist die folgende Frage unabhängig vom Kontext über carvolution.ch und kann sie auch ohne zusätzlichen Hintergrund sinnvoll beantwortet werden?`;
     const input = `${systemPrompt}\n\nFrage: ${question}`;
 
-    const result = await model.call(input);
-    return result.toLowerCase().includes('ja');
+    const result = await model.invoke(input);
+    const text = typeof result?.content === 'string' ? result.content : '';
+    return text.toLowerCase().includes('ja');
 }
 
 export async function POST(req: NextRequest) {
@@ -51,16 +53,18 @@ export async function POST(req: NextRequest) {
     try {
         const skipContext = await isContextFree(question);
 
-        const model = new OpenAI({
+        const model = new ChatOpenAI({
             temperature: 0,
             openAIApiKey: process.env.OPENAI_API_KEY,
-            maxTokens: 512
+            maxTokens: 512,
+            model: 'gpt-3.5-turbo'
         });
 
         let answer: string;
 
         if (skipContext) {
-            answer = await model.call(`Beantworte die folgende Frage möglichst sinnvoll, ohne Kontext. Frage: ${question}`);
+            const result = await model.invoke(`Beantworte die folgende Frage möglichst sinnvoll, ohne Kontext.\n\nFrage: ${question}`);
+            answer = typeof result.content === 'string' ? result.content : 'Keine Antwort erhalten.';
         } else {
             const store = await loadVectorStore();
 
@@ -68,11 +72,11 @@ export async function POST(req: NextRequest) {
             const context = relevantDocs.map((doc) => doc.pageContent).join('\n---\n');
 
             const prompt = `Nutze den Kontext unten, um die Frage so gut wie möglich zu beantworten.\n\nKontext:\n${context}\n\nFrage:\n${question}`;
-            answer = await model.call(prompt);
-
-            cache.set(question, answer);
+            const result = await model.invoke(prompt);
+            answer = typeof result.content === 'string' ? result.content : 'Keine Antwort erhalten.';
         }
 
+        cache.set(question, answer);
         return NextResponse.json({ answer });
 
     } catch (err) {
