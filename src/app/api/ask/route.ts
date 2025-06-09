@@ -9,10 +9,12 @@ import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 let vectorStore: MemoryVectorStore | null = null;
 const cache = new Map<string, string>();
 
+const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || 'Benjamin Jeschke';
+
 async function loadVectorStore(): Promise<MemoryVectorStore> {
     if (vectorStore) return vectorStore;
 
-    const filePath = path.join(process.cwd(), 'public/carvolution.txt');
+    const filePath = path.join(process.cwd(), `public/${COMPANY_NAME.toLowerCase()}.txt`);
     const rawText = await fs.readFile(filePath, 'utf-8');
 
     const splitter = new RecursiveCharacterTextSplitter({

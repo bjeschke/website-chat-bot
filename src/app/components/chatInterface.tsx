@@ -1,14 +1,20 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 
 interface Message {
     role: 'user' | 'assistant';
     content: string;
 }
 
+const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || 'Benjamin Jeschke';
+
 export default function ChatInterface() {
     const [question, setQuestion] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setMessages([{ role: 'assistant', content: `Hallo! Hast du eine Frage zu ${COMPANY_NAME}?` }]);
+    }, []);
 
     const sendQuestion = async () => {
         if (!question.trim()) return;
@@ -37,8 +43,9 @@ export default function ChatInterface() {
     };
 
     return (
-        <div className="p-4 max-w-2xl mx-auto">
-            <div className="border rounded p-4 h-[400px] overflow-y-auto">
+        <div className="p-4 max-w-2xl mx-auto bg-gradient-to-br from-blue-50 via-white to-blue-100 shadow-xl rounded-xl">
+            <div className="border rounded-t-lg p-4 bg-blue-400 text-white">{COMPANY_NAME} Chatbot</div>
+            <div className="border rounded-b-lg p-4 h-[400px] overflow-y-auto bg-white">
                 {messages.map((msg, i) => (
                     <div key={i} className={`mb-2 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
             <span className={`inline-block px-3 py-2 rounded ${msg.role === 'user' ? 'bg-blue-400' : 'bg-gray-500'}`}>
@@ -49,14 +56,14 @@ export default function ChatInterface() {
             </div>
             <div className="mt-4 flex gap-2">
                 <input
-                    className="flex-grow p-2 border rounded"
+                    className="flex-grow p-3 border-2 text-gray-700 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
                     placeholder="Deine Frage..."
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && sendQuestion()}
                 />
                 <button
-                    className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+                    className="px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
                     onClick={sendQuestion}
                     disabled={loading}
                 >
