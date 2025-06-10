@@ -1,0 +1,17 @@
+{
+  "crawler.starting": "Crawling gestartet...",
+  "crawler.completed": "✅ Crawling abgeschlossen – {{count}} Seiten gespeichert.",
+  "crawler.error": "Fehler beim Crawlen von {{url}}:",
+  "crawler.no_text": "⚠️ Kein sichtbarer Text auf der Seite gefunden.",
+  "ui.chatbot.greeting": "Hallo! Hast du eine Frage zu {{company}}?",
+  "ui.chatbot.title": "{{company}} Chatbot",
+  "ui.chatbot.placeholder": "Deine Frage...",
+  "ui.chatbot.button": "Senden",
+  "ui.chatbot.button.loading": "Antwortet...",
+  "ui.chatbot.loading": "Der Bot denkt nach...",
+  "ui.chatbot.error": "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+  "ui.chatbot.send_error": "Fehler beim Senden der Frage.",
+  "ui.chatbot.fallback": "Tut mir leid, ich konnte das nicht verstehen.",
+  "ui.chatbot.user_message": "Du",
+  "ui.chatbot.assistant_message": "Assistent"
+}

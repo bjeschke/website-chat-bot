@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import Spinner from "@/app/components/spinner";
+import { t } from '@/i18n';
 
 interface Message {
     role: 'user' | 'assistant' | 'loading';
@@ -14,7 +15,7 @@ export default function ChatInterface() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        setMessages([{ role: 'assistant', content: `Hallo! Hast du eine Frage zu ${COMPANY_NAME}?` }]);
+        setMessages([{ role: 'assistant', content: t('ui.chatbot.greeting', { company: COMPANY_NAME }) }]);
     }, []);
 
     const sendQuestion = async () => {
@@ -37,7 +38,7 @@ export default function ChatInterface() {
                 setMessages([...updatedMessages.filter(m => m.role !== 'loading'), { role: 'assistant', content: data.answer }]);
             }
         } catch (err) {
-            console.error('Fehler beim Senden:', err);
+            console.error(t('ui.chatbot.send_error'), err);
         } finally {
             setLoading(false);
         }
@@ -63,7 +64,7 @@ export default function ChatInterface() {
             <div className="mt-4 flex gap-2">
                 <input
                     className="flex-grow p-3 border-2 text-gray-700 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-                    placeholder="Deine Frage..."
+                    placeholder={ t('ui.chatbot.placeholder')}
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && sendQuestion()}
@@ -73,7 +74,7 @@ export default function ChatInterface() {
                     onClick={sendQuestion}
                     disabled={loading}
                 >
-                    {loading ? '...Antwortet' : 'Senden'}
+                    {loading ? t('ui.chatbot.button.loading') : t('ui.chatbot.button')}
                 </button>
             </div>
         </div>
